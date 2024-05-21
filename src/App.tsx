@@ -26,18 +26,18 @@ function moonToEvents(moonData: MoonPhases) {
 }
 
 function App() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventList, setEventList] = useState<CalandarEvent[]>([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    repeat: "none",
   });
 
   const moonDataFetch = async () => {
     await fetch(
-      "https://craigchamberlain.github.io/moon-data/api/moon-phase-data/2023/"
+      "https://craigchamberlain.github.io/moon-data/api/moon-phase-data/2024/"
     )
       .then((res) => res.json())
       .then((data) => {
@@ -64,14 +64,67 @@ function App() {
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
+    const newEvents = [];
     const data: CalandarEvent = {
       title: formData.title,
       description: formData.description,
       startTime: startDate,
       endTime: endDate,
     };
+    newEvents.push(data);
+
+    if (formData.repeat === "weekly") {
+      for (let i = 1; i < 100; i++) {
+        const repeatStart = new Date(startDate);
+        const repeatEnd = new Date(endDate);
+        repeatStart.setDate(startDate.getDate() + 7 * i);
+        repeatEnd.setDate(endDate.getDate() + 7 * i);
+
+        const repeatData: CalandarEvent = {
+          title: formData.title,
+          description: formData.description,
+          startTime: repeatStart,
+          endTime: endDate,
+        };
+        newEvents.push(repeatData);
+      }
+    }
+
+    if (formData.repeat === "monthly") {
+      for (let i = 1; i < 100; i++) {
+        const repeatStart = new Date(startDate);
+        repeatStart.setMonth(startDate.getMonth() + i);
+        const repeatEnd = new Date(endDate);
+        repeatEnd.setMonth(endDate.getMonth() + i);
+
+        const repeatData: CalandarEvent = {
+          title: formData.title,
+          description: formData.description,
+          startTime: repeatStart,
+          endTime: endDate,
+        };
+        newEvents.push(repeatData);
+      }
+    }
+
+    if (formData.repeat === "annually") {
+      for (let i = 1; i < 100; i++) {
+        const repeatStart = new Date(startDate);
+        repeatStart.setFullYear(startDate.getFullYear() + i);
+        const repeatEnd = new Date(endDate);
+        repeatEnd.setFullYear(endDate.getFullYear() + i);
+
+        const repeatData: CalandarEvent = {
+          title: formData.title,
+          description: formData.description,
+          startTime: repeatStart,
+          endTime: endDate,
+        };
+        newEvents.push(repeatData);
+      }
+    }
     setEventList(
-      [...eventList, data].sort(
+      [...eventList, ...newEvents].sort(
         (a, b) =>
           -(
             Date.parse(b.startTime.toString()) -
@@ -115,16 +168,63 @@ function App() {
             onChange={(date: Date) => setEndDate(date)}
           />
 
+          <div className="radio">
+            <label>
+              <input
+                type="radio"
+                value="none"
+                name="repeat"
+                checked={formData.repeat === "none"}
+                onChange={handleChange}
+              />
+              None
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                value="weekly"
+                name="repeat"
+                checked={formData.repeat === "weekly"}
+                onChange={handleChange}
+              />
+              Weekly
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                value="monthly"
+                name="repeat"
+                checked={formData.repeat === "monthly"}
+                onChange={handleChange}
+              />
+              Monthly
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                value="annually"
+                name="repeat"
+                checked={formData.repeat === "annually"}
+                onChange={handleChange}
+              />
+              Annually
+            </label>
+          </div>
+
           <button type="submit">Submit</button>
         </form>
       </div>
       <div className="list">
         <ul>
           {eventList.map((calandarEvent, index) => (
-            <div>
-              <li key={index}>
+            <div key={index}>
+              <li>
                 <p>{calandarEvent.title}</p>
                 <p>{new Date(calandarEvent.startTime).toDateString()}</p>
+                <p>Description: {calandarEvent.description}</p>
                 <button>Edit</button>
                 <button>Delete</button>
               </li>

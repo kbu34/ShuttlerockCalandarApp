@@ -12,6 +12,18 @@ code {
     monospace;
 }
 
+label {
+  margin: 1px;
+  margin-left: 10px;
+}
+button {
+  margin: 2px;
+}
+
+li {
+  margin-top: 40px;
+}
+
 .calandar {
   display: flex;
   justify-content: center;
