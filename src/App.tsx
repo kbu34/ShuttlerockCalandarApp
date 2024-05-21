@@ -140,6 +140,7 @@ function App() {
 
   return (
     <div>
+      <h1 className="flex justify-center mt-2 text-5xl">Calandar React App</h1>
       <div className="form">
         <form onSubmit={handleSubmit}>
           <div className="m-2">
@@ -232,7 +233,7 @@ function App() {
             </label>
           </div>
 
-          <button className="rounded-md w-14" type="submit">
+          <button className="rounded-md w-14 mt-2" type="submit">
             Submit
           </button>
         </form>
