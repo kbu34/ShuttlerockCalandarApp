@@ -76,21 +76,19 @@ function App() {
     if (formData.repeat === "weekly") {
       for (let i = 1; i < 100; i++) {
         const repeatStart = new Date(startDate);
-        const repeatEnd = new Date(endDate);
         repeatStart.setDate(startDate.getDate() + 7 * i);
+        const repeatEnd = new Date(endDate);
         repeatEnd.setDate(endDate.getDate() + 7 * i);
 
         const repeatData: CalandarEvent = {
           title: formData.title,
           description: formData.description,
           startTime: repeatStart,
-          endTime: endDate,
+          endTime: repeatEnd,
         };
         newEvents.push(repeatData);
       }
-    }
-
-    if (formData.repeat === "monthly") {
+    } else if (formData.repeat === "monthly") {
       for (let i = 1; i < 100; i++) {
         const repeatStart = new Date(startDate);
         repeatStart.setMonth(startDate.getMonth() + i);
@@ -101,13 +99,11 @@ function App() {
           title: formData.title,
           description: formData.description,
           startTime: repeatStart,
-          endTime: endDate,
+          endTime: repeatEnd,
         };
         newEvents.push(repeatData);
       }
-    }
-
-    if (formData.repeat === "annually") {
+    } else if (formData.repeat === "annually") {
       for (let i = 1; i < 100; i++) {
         const repeatStart = new Date(startDate);
         repeatStart.setFullYear(startDate.getFullYear() + i);
@@ -118,11 +114,12 @@ function App() {
           title: formData.title,
           description: formData.description,
           startTime: repeatStart,
-          endTime: endDate,
+          endTime: repeatEnd,
         };
         newEvents.push(repeatData);
       }
     }
+
     setEventList(
       [...eventList, ...newEvents].sort(
         (a, b) =>
@@ -132,45 +129,66 @@ function App() {
           )
       )
     );
+    setFormData({
+      title: "",
+      description: "",
+      repeat: "none",
+    });
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
 
   return (
     <div>
       <div className="form">
         <form onSubmit={handleSubmit}>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-          />
+          <div className="m-2">
+            <label htmlFor="title">Title:</label>
+            <input
+              className="border-solid border-2"
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </div>
 
-          <label htmlFor="description">Description:</label>
-          <input
-            type="text"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-          />
+          <div className="m-2">
+            <label htmlFor="description">Description:</label>
+            <input
+              className="border-solid border-2"
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </div>
 
-          <label htmlFor="startTime">Start Time:</label>
-          <DatePicker
-            selected={startDate}
-            showTimeSelect
-            onChange={(date: Date) => setStartDate(date)}
-          />
+          <div className="m-2">
+            <label htmlFor="startTime">Start Time:</label>
+            <DatePicker
+              className="border-solid border-2"
+              selected={startDate}
+              showTimeSelect
+              onChange={(date: Date) => setStartDate(date)}
+            />
+          </div>
 
-          <label htmlFor="endTime">End Time:</label>
-          <DatePicker
-            selected={endDate}
-            showTimeSelect
-            onChange={(date: Date) => setEndDate(date)}
-          />
+          <div className="m-2">
+            <label htmlFor="endTime">End Time:</label>
+            <DatePicker
+              className="border-solid border-2"
+              selected={endDate}
+              showTimeSelect
+              onChange={(date: Date) => setEndDate(date)}
+            />
+          </div>
 
           <div className="radio">
+            <label>Repeat:</label>
             <label>
               <input
+                className="border-dashed"
                 type="radio"
                 value="none"
                 name="repeat"
@@ -214,19 +232,22 @@ function App() {
             </label>
           </div>
 
-          <button type="submit">Submit</button>
+          <button className="rounded-md w-14" type="submit">
+            Submit
+          </button>
         </form>
       </div>
       <div className="list">
         <ul>
           {eventList.map((calandarEvent, index) => (
-            <div key={index}>
-              <li>
+            <div key={index} className="bg-gray-200 rounded-md m-4 w-full">
+              <li className="event">
                 <p>{calandarEvent.title}</p>
-                <p>{new Date(calandarEvent.startTime).toDateString()}</p>
+                <p>Start: {new Date(calandarEvent.startTime).toString()}</p>
+                <p>End: {new Date(calandarEvent.endTime).toString()}</p>
                 <p>Description: {calandarEvent.description}</p>
-                <button>Edit</button>
-                <button>Delete</button>
+                <button className="w-14 rounded-md">Edit</button>
+                <button className="w-20 rounded-md">Delete</button>
               </li>
             </div>
           ))}
